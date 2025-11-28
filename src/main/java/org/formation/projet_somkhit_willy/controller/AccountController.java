@@ -1,5 +1,7 @@
 package org.formation.projet_somkhit_willy.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.formation.projet_somkhit_willy.entity.*;
 import org.formation.projet_somkhit_willy.repository.*;
 import org.formation.projet_somkhit_willy.service.AccountService;
@@ -14,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/accounts")
+@Tag(name = "Account Management", description = "APIs for managing accounts, including current, saving accounts, and transfers")
 public class AccountController {
 
     private final AccountService accountService;
@@ -36,49 +39,41 @@ public class AccountController {
         this.currentAccountRepository = currentAccountRepository;
     }
 
+    @Operation(summary = "Create a generic account")
     @PostMapping
     public ResponseEntity<Account> createAccount(@RequestBody Account account) {
         Account savedAccount = accountRepository.save(account);
         return ResponseEntity.ok(savedAccount);
     }
 
+    @Operation(summary = "Create a saving account for a client")
     @PostMapping("/saving/{clientId}")
     public ResponseEntity<?> createSavingAccount(@PathVariable("clientId") Long clientId) {
-        // Fetch client
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found"));
 
-        // Check in the database if the client already has a saving account
-        if ((client.getSavingAccount() != null)) {
+        if (client.getSavingAccount() != null) {
             return ResponseEntity.badRequest()
                     .body("Client already has a saving account");
         }
 
-        // Create new saving account
         SavingAccount account = new SavingAccount();
         account.setClient(client);
         account.setBalance(BigDecimal.ZERO);
         account.setOpeningDate(LocalDate.now());
         account.setInterestRate(0.03);
 
-        // Set bidirectional link
         client.setSavingAccount(account);
 
-        // Save the account
         SavingAccount savedAccount = savingAccountRepository.save(account);
-
         return ResponseEntity.ok(savedAccount);
     }
 
-
-
-    // --- CREATE CURRENT ACCOUNT ---
+    @Operation(summary = "Create a current account for a client")
     @PostMapping("/current/{clientId}")
     public ResponseEntity<?> createCurrentAccount(@PathVariable("clientId") Long clientId) {
-
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found"));
-
 
         if (client.getCurrentAccount() != null) {
             return ResponseEntity.badRequest()
@@ -96,22 +91,27 @@ public class AccountController {
         return ResponseEntity.ok(account);
     }
 
-
+    @Operation(summary = "Get account by account number")
     @GetMapping("/{accountNumber}")
     public ResponseEntity<Account> getAccount(@PathVariable UUID accountNumber) {
         return ResponseEntity.ok(accountService.getAccountByNumber(accountNumber));
     }
 
+    @Operation(summary = "Credit an account")
     @PostMapping("/{accountNumber}/credit")
-    public ResponseEntity<Account> credit(@PathVariable UUID accountNumber, @RequestParam BigDecimal amount) {
+    public ResponseEntity<Account> credit(@PathVariable UUID accountNumber,
+                                          @RequestParam BigDecimal amount) {
         return ResponseEntity.ok(accountService.creditAccount(accountNumber, amount));
     }
 
+    @Operation(summary = "Debit an account")
     @PostMapping("/{accountNumber}/debit")
-    public ResponseEntity<Account> debit(@PathVariable UUID accountNumber, @RequestParam BigDecimal amount) {
+    public ResponseEntity<Account> debit(@PathVariable UUID accountNumber,
+                                         @RequestParam BigDecimal amount) {
         return ResponseEntity.ok(accountService.debitAccount(accountNumber, amount));
     }
 
+    @Operation(summary = "Transfer between accounts")
     @PostMapping("/transfer")
     public ResponseEntity<String> transfer(@RequestBody Map<String, Object> body) {
         try {
@@ -128,10 +128,9 @@ public class AccountController {
         }
     }
 
+    @Operation(summary = "Audit all accounts")
     @GetMapping("/audit")
     public ResponseEntity<List<Account>> auditAccounts() {
         return ResponseEntity.ok(accountService.auditAccounts());
     }
-
-
 }
