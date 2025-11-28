@@ -58,6 +58,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public BigDecimal getAvailableBalance(UUID accountNumber) {
+        Account account = accountRepository.findById(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Source account not found"));
+        BigDecimal availableBalance = account.getBalance();
+        if (account instanceof CurrentAccount) {
+            CurrentAccount current = (CurrentAccount) account;
+            availableBalance = availableBalance.add(BigDecimal.valueOf(current.getOverdraftLimit()));
+        }
+        return availableBalance;
+    }
+
+    @Override
     public Account creditAccount(UUID accountNumber, BigDecimal amount) {
         Account account = getAccountByNumber(accountNumber);
         account.setBalance(account.getBalance().add(amount));
@@ -67,7 +79,34 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account debitAccount(UUID accountNumber, BigDecimal amount) {
         Account account = getAccountByNumber(accountNumber);
+        BigDecimal availableBalance = getAvailableBalance(accountNumber);
+        if(availableBalance.compareTo(amount) < 0)
+        {
+            throw new RuntimeException("Insufficient funds\navailable balance: "+availableBalance);
+        }
         account.setBalance(account.getBalance().subtract(amount));
         return accountRepository.save(account);
+    }
+
+
+    @Transactional
+    public void transfer(UUID fromAccount, UUID toAccount, BigDecimal amount) {
+        Account source = accountRepository.findById(fromAccount)
+                .orElseThrow(() -> new RuntimeException("Source account not found"));
+        Account target = accountRepository.findById(toAccount)
+                .orElseThrow(() -> new RuntimeException("Target account not found"));
+
+
+        BigDecimal availableBalance = getAvailableBalance(fromAccount);
+
+        if (source.getBalance().compareTo(availableBalance) < 0) {
+            throw new RuntimeException("Insufficient funds\navailable balance: "+availableBalance);
+        }
+
+        source.setBalance(source.getBalance().subtract(amount));
+        target.setBalance(target.getBalance().add(amount));
+
+        accountRepository.save(source);
+        accountRepository.save(target);
     }
 }

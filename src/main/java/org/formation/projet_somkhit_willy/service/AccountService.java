@@ -11,4 +11,7 @@ public interface AccountService {
     Account getAccountByNumber(UUID accountNumber);
     Account creditAccount(UUID accountNumber, BigDecimal amount);
     Account debitAccount(UUID accountNumber, BigDecimal amount);
+    BigDecimal getAvailableBalance(UUID accountNumber);
+
+    void transfer(UUID fromAccount, UUID toAccount, BigDecimal amount);
 }

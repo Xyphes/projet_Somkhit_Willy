@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -109,4 +110,21 @@ public class AccountController {
     public ResponseEntity<Account> debit(@PathVariable UUID accountNumber, @RequestParam BigDecimal amount) {
         return ResponseEntity.ok(accountService.debitAccount(accountNumber, amount));
     }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<String> transfer(@RequestBody Map<String, Object> body) {
+        try {
+            UUID fromAccount = UUID.fromString((String) body.get("fromAccount"));
+            UUID toAccount = UUID.fromString((String) body.get("toAccount"));
+            BigDecimal amount = new BigDecimal(body.get("amount").toString());
+
+            accountService.transfer(fromAccount, toAccount, amount);
+            return ResponseEntity.ok("Transfer successful");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid request format");
+        }
+    }
+
 }
