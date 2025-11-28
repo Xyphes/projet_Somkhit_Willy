@@ -1,0 +1,131 @@
+@startuml
+interface org.formation.projet_somkhit_willy.repository.CurrentAccountRepository {
+}
+interface org.formation.projet_somkhit_willy.repository.SavingAccountRepository {
+}
+interface org.formation.projet_somkhit_willy.service.AccountService {
+~ CurrentAccount createCurrentAccount(long,UUID,BigDecimal)
+~ SavingAccount createSavingAccount(long,UUID,BigDecimal)
+~ Account getAccountByNumber(UUID)
+~ Account creditAccount(UUID,BigDecimal)
+~ Account debitAccount(UUID,BigDecimal)
+~ BigDecimal getAvailableBalance(UUID)
+~ Account applyInterest(UUID)
+~ List<Account> auditAccounts()
+~ void transfer(UUID,UUID,BigDecimal)
+}
+
+class org.formation.projet_somkhit_willy.service.impl.AccountServiceImpl {
+- AccountRepository accountRepository
+- CurrentAccountRepository currentAccountRepository
+- SavingAccountRepository savingAccountRepository
+- ClientRepository clientRepository
++ CurrentAccount createCurrentAccount(long,UUID,BigDecimal)
++ SavingAccount createSavingAccount(long,UUID,BigDecimal)
++ Account getAccountByNumber(UUID)
++ BigDecimal getAvailableBalance(UUID)
++ Account creditAccount(UUID,BigDecimal)
++ Account debitAccount(UUID,BigDecimal)
++ Account applyInterest(UUID)
++ void transfer(UUID,UUID,BigDecimal)
++ List<Account> auditAccounts()
+}
+
+
+interface org.formation.projet_somkhit_willy.repository.ClientRepository {
+}
+class org.formation.projet_somkhit_willy.controller.AccountController {
+- AccountService accountService
+- AccountRepository accountRepository
+- ClientRepository clientRepository
+- SavingAccountRepository savingAccountRepository
+- CurrentAccountRepository currentAccountRepository
++ ResponseEntity<Account> createAccount(Account)
++ ResponseEntity<?> createSavingAccount(Long)
++ ResponseEntity<?> createCurrentAccount(Long)
++ ResponseEntity<Account> getAccount(UUID)
++ ResponseEntity<Account> credit(UUID,BigDecimal)
++ ResponseEntity<Account> debit(UUID,BigDecimal)
++ ResponseEntity<String> transfer(Map<String,Object>)
++ ResponseEntity<List<Account>> auditAccounts()
+}
+
+
+class org.formation.projet_somkhit_willy.entity.CurrentAccount {
+- BigDecimal overdraftLimit
+}
+
+interface org.formation.projet_somkhit_willy.service.ClientService {
+~ Client createClient(Client)
+~ Client updateClient(Long,Client)
+~ Optional<Client> getClientById(Long)
+~ List<Client> getAllClients()
+~ void deleteClient(Long)
+}
+
+class org.formation.projet_somkhit_willy.entity.SavingAccount {
+- double interestRate
+}
+
+abstract class org.formation.projet_somkhit_willy.entity.Account {
+- UUID accountNumber
+- BigDecimal balance
+- LocalDate openingDate
+- Client client
+}
+
+class org.formation.projet_somkhit_willy.service.impl.ClientServiceImpl {
+- ClientRepository clientRepository
++ Client createClient(Client)
++ Client updateClient(Long,Client)
++ Optional<Client> getClientById(Long)
++ List<Client> getAllClients()
++ void deleteClient(Long)
+}
+
+
+class org.formation.projet_somkhit_willy.aspect.TransferLoggingAspect {
+- {static} org.slf4j.Logger transferLogger
++ void logTransfer(JoinPoint)
+}
+
+
+interface org.formation.projet_somkhit_willy.repository.AccountRepository {
+}
+class org.formation.projet_somkhit_willy.entity.Client {
+- Long id
+- String lastName
+- String firstName
+- String address
+- String postalCode
+- String city
+- String phoneNumber
+- SavingAccount savingAccount
+- CurrentAccount currentAccount
+}
+
+class org.formation.projet_somkhit_willy.controller.ClientController {
+- ClientService clientService
++ Client createClient(Client)
++ List<Client> getAllClients()
++ ResponseEntity<Client> getClientById(Long)
++ Client updateClient(Long,Client)
++ void deleteClient(Long)
+}
+
+
+class org.formation.projet_somkhit_willy.ProjetSomkhitWillyApplication {
++ {static} void main(String[])
+}
+
+
+
+org.springframework.data.jpa.repository.JpaRepository <|-- org.formation.projet_somkhit_willy.repository.CurrentAccountRepository
+org.springframework.data.jpa.repository.JpaRepository <|-- org.formation.projet_somkhit_willy.repository.SavingAccountRepository
+org.formation.projet_somkhit_willy.service.AccountService <|.. org.formation.projet_somkhit_willy.service.impl.AccountServiceImpl
+org.springframework.data.jpa.repository.JpaRepository <|-- org.formation.projet_somkhit_willy.repository.ClientRepository
+org.formation.projet_somkhit_willy.entity.Account <|-- org.formation.projet_somkhit_willy.entity.CurrentAccount
+org.formation.projet_somkhit_willy.entity.Account <|-- org.formation.projet_somkhit_willy.entity.SavingAccount
+org.formation.projet_somkhit_willy.service.ClientService <|.. org.formation.projet_somkhit_willy.service.impl.ClientServiceImpl
+org.springframework.data.jpa.repository.JpaRepository <|-- org.formation.projet_somkhit_willy.repository.AccountRepository
+@enduml
