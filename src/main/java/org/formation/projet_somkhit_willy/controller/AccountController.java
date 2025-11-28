@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -126,5 +127,11 @@ public class AccountController {
             return ResponseEntity.badRequest().body("Invalid request format");
         }
     }
+
+    @GetMapping("/audit")
+    public ResponseEntity<List<Account>> auditAccounts() {
+        return ResponseEntity.ok(accountService.auditAccounts());
+    }
+
 
 }

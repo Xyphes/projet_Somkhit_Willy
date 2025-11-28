@@ -15,8 +15,8 @@ public class CurrentAccount extends Account {
 
     private BigDecimal overdraftLimit = new BigDecimal(1000.0);
 
-    @OneToOne
-    @JoinColumn(name = "client_id", unique = true)
-    @JsonIgnoreProperties({"savingAccount", "currentAccount"})
-    private Client client;
+//    @OneToOne
+//    @JoinColumn(name = "client_id", unique = true)
+//    @JsonIgnoreProperties({"savingAccount", "currentAccount"})
+//    private Client client;
 }

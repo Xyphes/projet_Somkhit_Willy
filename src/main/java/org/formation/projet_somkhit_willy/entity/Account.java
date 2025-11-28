@@ -1,5 +1,6 @@
 package org.formation.projet_somkhit_willy.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,4 +25,9 @@ public abstract class Account {
     private BigDecimal balance;
 
     private LocalDate openingDate;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "client_id")
+    @JsonIgnoreProperties({"savingAccount", "currentAccount"})
+    private Client client;
 }

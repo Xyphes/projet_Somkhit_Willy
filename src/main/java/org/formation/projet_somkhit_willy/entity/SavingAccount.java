@@ -13,8 +13,8 @@ public class SavingAccount extends Account {
 
     private double interestRate = 0.03;
 
-    @OneToOne
-    @JoinColumn(name = "client_id", unique = true)
-    @JsonIgnoreProperties({"savingAccount", "currentAccount"})
-    private Client client;
+//    @OneToOne
+//    @JoinColumn(name = "client_id", unique = true)
+//    @JsonIgnoreProperties({"savingAccount", "currentAccount"})
+//    private Client client;
 }

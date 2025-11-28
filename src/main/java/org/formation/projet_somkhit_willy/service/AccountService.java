@@ -3,6 +3,7 @@ package org.formation.projet_somkhit_willy.service;
 import org.formation.projet_somkhit_willy.entity.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 public interface AccountService {
@@ -13,6 +14,7 @@ public interface AccountService {
     Account debitAccount(UUID accountNumber, BigDecimal amount);
     BigDecimal getAvailableBalance(UUID accountNumber);
     Account applyInterest(UUID accountNumber);
+    List<Account> auditAccounts();
 
     void transfer(UUID fromAccount, UUID toAccount, BigDecimal amount);
 }

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -138,6 +139,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     public void transfer(UUID fromAccount, UUID toAccount, BigDecimal amount) {
+        if(amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Amount cannot be equal or less than zero");
+        }
         Account source = accountRepository.findById(fromAccount)
                 .orElseThrow(() -> new RuntimeException("Source account not found"));
         Account target = accountRepository.findById(toAccount)
@@ -146,7 +150,7 @@ public class AccountServiceImpl implements AccountService {
 
         BigDecimal availableBalance = getAvailableBalance(fromAccount);
 
-        if (source.getBalance().compareTo(availableBalance) < 0) {
+        if (availableBalance.compareTo(amount) < 0) {
             throw new RuntimeException("Insufficient funds\navailable balance: "+availableBalance);
         }
 
@@ -156,4 +160,25 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(source);
         accountRepository.save(target);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Account> auditAccounts() {
+        List<Account> allAccounts = accountRepository.findAll();
+
+        // Filter accounts with balance > 5000
+        List<Account> exceedingAccounts = allAccounts.stream()
+                .filter(account -> account.getBalance().compareTo(BigDecimal.valueOf(5000)) > 0).toList();
+
+        // Optional: log details
+        for (Account account : exceedingAccounts) {
+            System.out.println("Account " + account.getAccountNumber()
+                    + " (" + account.getClient().getFirstName() + " " + account.getClient().getLastName() + ")"
+                    + " balance: " + account.getBalance() + " exceeds limit: true");
+        }
+
+        return exceedingAccounts;
+    }
+
+
 }
