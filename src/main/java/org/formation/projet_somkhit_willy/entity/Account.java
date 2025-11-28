@@ -1,4 +1,5 @@
 package org.formation.projet_somkhit_willy.entity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,9 +11,12 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "ACCOUNTS")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "ACCOUNT_TYPE")
+@JsonIgnoreProperties("client")
 public class Account {
     @Id
-    private String accountNumber;
+    private long accountNumber;
 
     private BigDecimal balance;
 
