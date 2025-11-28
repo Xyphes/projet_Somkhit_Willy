@@ -88,6 +88,25 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.save(account);
     }
 
+    @Override
+    @Transactional
+    public Account applyInterest(UUID accountNumber) {
+        Account account = getAccountByNumber(accountNumber);
+
+        if (!(account instanceof SavingAccount)) {
+            throw new RuntimeException("Account is not a SavingAccount");
+        }
+
+        SavingAccount savingAccount = (SavingAccount) account;
+
+        BigDecimal currentBalance = savingAccount.getBalance();
+        BigDecimal interest = currentBalance.multiply(BigDecimal.valueOf(savingAccount.getInterestRate()));
+        savingAccount.setBalance(currentBalance.add(interest));
+
+        accountRepository.save(savingAccount);
+
+        return savingAccount;
+    }
 
     @Transactional
     public void transfer(UUID fromAccount, UUID toAccount, BigDecimal amount) {
