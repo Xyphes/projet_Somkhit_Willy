@@ -5,15 +5,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-import java.util.HashSet;
-
-@Entity
 @Getter
 @Setter
+@Entity
 @Table(name = "CLIENTS")
-@JsonIgnoreProperties("client")
 public class Client {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -25,6 +22,11 @@ public class Client {
     private String city;
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Account> accounts = new HashSet<Account>();
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("client")
+    private SavingAccount savingAccount;
+
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("client")
+    private CurrentAccount currentAccount;
 }

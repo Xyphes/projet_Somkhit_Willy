@@ -1,0 +1,15 @@
+2025-11-28 13:39:49.871321+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "delete [*]* FROM CLIENTS"; expected "identifier"; SQL statement:
+delete * FROM CLIENTS [42001-232]
+2025-11-28 14:40:34.707402+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "CAST(0 AS BIGINT) (ACCOUNTS_COPY_3_0: ""ACCOUNT_NUMBER"" UUID NOT NULL)"; SQL statement:
+INSERT INTO "PUBLIC"."ACCOUNTS_COPY_3_0"("ACCOUNT_TYPE", "ACCOUNT_NUMBER", "BALANCE", "OPENING_DATE", "OVERDRAFT_LIMIT", "INTEREST_RATE", "CLIENT_ID") OVERRIDING SYSTEM VALUE SELECT "ACCOUNT_TYPE", "ACCOUNT_NUMBER", "BALANCE", "OPENING_DATE", "OVERDRAFT_LIMIT", "INTEREST_RATE", "CLIENT_ID" FROM "PUBLIC"."ACCOUNTS" [22018-232]
+2025-11-28 14:40:36.309865+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "UUID '2fc34d69-87d4-4a0e-a7a5-58d4227f8a17' (ACCOUNTS: ""ACCOUNT_NUMBER"" BIGINT NOT NULL)"; SQL statement:
+insert into accounts (balance,client_id,opening_date,interest_rate,account_type,account_number) values (?,?,?,?,'SAVING',?) [22018-232]
+2025-11-28 14:40:37.814496+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "UUID 'd18538de-dc21-4296-9097-1e4be39ff737' (ACCOUNTS: ""ACCOUNT_NUMBER"" BIGINT NOT NULL)"; SQL statement:
+insert into accounts (balance,client_id,opening_date,interest_rate,account_type,account_number) values (?,?,?,?,'SAVING',?) [22018-232]
+2025-11-28 15:00:01.771263+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]clear* FROM ACCOUNTS"; expected "COMMIT, CREATE, CALL, CHECKPOINT, COMMENT"; SQL statement:
+clear* FROM ACCOUNTS [42001-232]

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class AccountServiceImpl implements AccountService {
     private final ClientRepository clientRepository;
 
     @Override
-    public CurrentAccount createCurrentAccount(long clientId, long accountNumber, BigDecimal initialBalance) {
+    public CurrentAccount createCurrentAccount(long clientId, UUID accountNumber, BigDecimal initialBalance) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found"));
 
@@ -36,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public SavingAccount createSavingAccount(long clientId, long accountNumber, BigDecimal initialBalance) {
+    public SavingAccount createSavingAccount(long clientId, UUID accountNumber, BigDecimal initialBalance) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found"));
 
@@ -51,20 +52,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account getAccountByNumber(long accountNumber) {
+    public Account getAccountByNumber(UUID accountNumber) {
         return accountRepository.findById(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
     }
 
     @Override
-    public Account creditAccount(long accountNumber, BigDecimal amount) {
+    public Account creditAccount(UUID accountNumber, BigDecimal amount) {
         Account account = getAccountByNumber(accountNumber);
         account.setBalance(account.getBalance().add(amount));
         return accountRepository.save(account);
     }
 
     @Override
-    public Account debitAccount(long accountNumber, BigDecimal amount) {
+    public Account debitAccount(UUID accountNumber, BigDecimal amount) {
         Account account = getAccountByNumber(accountNumber);
         account.setBalance(account.getBalance().subtract(amount));
         return accountRepository.save(account);
