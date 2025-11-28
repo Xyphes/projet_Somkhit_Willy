@@ -87,6 +87,7 @@ public class AccountServiceImpl implements AccountService {
 
         account.setBalance(account.getBalance().subtract(amount));
         return accountRepository.save(account);
+    }
 
     //SHORT TERM LOAN???
 /*
