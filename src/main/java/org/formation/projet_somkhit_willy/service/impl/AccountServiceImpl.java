@@ -31,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
         account.setBalance(initialBalance);
         account.setOpeningDate(LocalDate.now());
         account.setClient(client);
-        account.setOverdraftLimit(1000.0);
+        account.setOverdraftLimit(BigDecimal.valueOf(1000.0));
 
         return currentAccountRepository.save(account);
     }
@@ -64,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
         BigDecimal availableBalance = account.getBalance();
         if (account instanceof CurrentAccount) {
             CurrentAccount current = (CurrentAccount) account;
-            availableBalance = availableBalance.add(BigDecimal.valueOf(current.getOverdraftLimit()));
+            availableBalance = availableBalance.add(current.getOverdraftLimit());
         }
         return availableBalance;
     }
@@ -79,14 +79,41 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account debitAccount(UUID accountNumber, BigDecimal amount) {
         Account account = getAccountByNumber(accountNumber);
+
         BigDecimal availableBalance = getAvailableBalance(accountNumber);
-        if(availableBalance.compareTo(amount) < 0)
-        {
-            throw new RuntimeException("Insufficient funds\navailable balance: "+availableBalance);
+        if (availableBalance.compareTo(amount) < 0) {
+            throw new RuntimeException("Insufficient funds. Available balance: " + availableBalance);
         }
+
         account.setBalance(account.getBalance().subtract(amount));
         return accountRepository.save(account);
-    }
+
+    //SHORT TERM LOAN???
+/*
+    @Override
+    public Account debitAccount(UUID accountNumber, BigDecimal amount) {
+        Account account = getAccountByNumber(accountNumber);
+        //if it's a current account and has access to overdraft limit
+        if (account instanceof CurrentAccount) {
+            CurrentAccount current = (CurrentAccount) account;
+            BigDecimal availableBalance = getAvailableBalance(accountNumber);
+            //if it already exceeded overdraft limit
+            if(availableBalance.compareTo(amount) < 0)
+            {
+                throw new RuntimeException("Insufficient funds\navailable balance: "+availableBalance);
+            }
+            //substract the amount adn the report it to the overdraft limit
+            current.setBalance(current.getOverdraftLimit().subtract(amount));
+            if(current.getBalance().compareTo(BigDecimal.ZERO) < 0)
+            {
+                current.getOverdraftLimit().subtract(current.getOverdraftLimit());
+                current.setBalance(BigDecimal.ZERO);
+            }
+        }
+
+        account.setBalance(account.getBalance().subtract(amount));
+        return accountRepository.save(account);
+    }*/
 
     @Override
     @Transactional

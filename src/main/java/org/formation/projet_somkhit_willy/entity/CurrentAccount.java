@@ -5,13 +5,15 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Entity
 @DiscriminatorValue("CURRENT")
 public class CurrentAccount extends Account {
 
-    private double overdraftLimit = 1000.0;
+    private BigDecimal overdraftLimit = new BigDecimal(1000.0);
 
     @OneToOne
     @JoinColumn(name = "client_id", unique = true)
