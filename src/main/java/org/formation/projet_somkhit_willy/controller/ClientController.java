@@ -8,10 +8,12 @@ import org.formation.projet_somkhit_willy.entity.Client;
 import org.formation.projet_somkhit_willy.service.ClientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.util.List;
 
 @RestController
+@ConditionalOnProperty(prefix = "legacy.controllers", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("/api/clients")
 @Tag(name = "Client Management", description = "Endpoints for managing clients")
 public class ClientController {

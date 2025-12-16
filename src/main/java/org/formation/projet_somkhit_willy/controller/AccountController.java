@@ -7,6 +7,7 @@ import org.formation.projet_somkhit_willy.repository.*;
 import org.formation.projet_somkhit_willy.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@ConditionalOnProperty(prefix = "legacy.controllers", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("/api/accounts")
 @Tag(name = "Account Management", description = "APIs for managing accounts, including current, saving accounts, and transfers")
 public class AccountController {
