@@ -17,7 +17,10 @@ public class TransferLoggingAspect {
     private static final org.slf4j.Logger transferLogger =
             org.slf4j.LoggerFactory.getLogger("TRANSFER_LOGGER");
 
-    @After("execution(* org.formation.projet_somkhit_willy.service.impl.AccountServiceImpl.transfer(..))")
+    // Generic pointcut on any 'transfer' method anywhere in the project packages.
+    // This avoids tight coupling to legacy implementation class names and
+    // continues to log transfers when the implementation moves to application/usecase.
+    @After("execution(* org.formation.projet_somkhit_willy..*.transfer(..))")
     public void logTransfer(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         UUID sourceAccount = (UUID) args[0];
